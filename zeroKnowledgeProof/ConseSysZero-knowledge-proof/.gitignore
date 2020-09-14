@@ -1,0 +1,14 @@
+test
+*.o
+*.d
+depinst
+depsrc
+*.swp
+libsnark
+payment_*
+proof*
+proving*
+node_modules/
+privateInputParameters*
+publicInputParameters*
+verificationKey*
