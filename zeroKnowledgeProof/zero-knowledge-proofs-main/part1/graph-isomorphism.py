@@ -61,7 +61,7 @@ def applyIsomorphism(G, f):
     return [(f(i), f(j)) for (i, j) in G]
 
 
-def drawIsomorphism(n, G1):
+def drawIsomorphic(n, G1):
     g = Graph()
     print("Graph G = ", g)
     g.add_vertices(n)
@@ -266,7 +266,7 @@ if __name__ == "__main__":
     print("G1 is =", G1)
     n = numVertices(G1)
     print("number of vertices n =", n)
-    drawIsomorphic(n, G1)
+    # drawIsomorphic(n, G1)
 
     p = randomPermutation(n)
     print("random permutation p= ", p)
