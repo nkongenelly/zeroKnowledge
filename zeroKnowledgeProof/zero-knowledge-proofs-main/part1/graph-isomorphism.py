@@ -120,17 +120,32 @@ class Verifier(object):
         return choice
 
     def accepts(self, isomorphism):
+        # isomorphism = piInverse = lambda i: 1 + L.index(i - 1) given L = randomIsomorphism) = [3, 4, 2, 0, 1, 5]  OR f = lambda i: L[i - 1] + 1 given L = isomorphism) = [3, 4, 2, 0, 1, 5]
         '''
             Return True if and only if the given isomorphism
             is a valid isomorphism between the randomly
             chosen graph in the first step, and the H presented
             by the Prover.
         '''
+        # H = G2 = [(4, 5), (4, 1), (4, 3), (5, 2), (5, 2), (3, 6), (2, 6)] == G2
+        # choice = 1 / 2
+        # G1 is = [(1, 2), (1, 4), (1, 3), (2, 5), (2, 5), (3, 6), (5, 6)]
+        # G2 is = [(4, 5), (4, 1), (4, 3), (5, 2), (5, 2), (3, 6), (2, 6)]
+        # choice = 2
         H, choice = self.state
         graphToCheck = [self.G1, self.G2][choice - 1]
+        # print("concatenate = ", [self.G1, self.G2]) =  [[(1, 2), (1, 4), (1, 3), (2, 5), (2, 5), (3, 6), (5, 6)], [(4, 5), (4, 1), (4, 3), (5, 2), (5, 2), (3, 6), (2, 6)]]
+        # print("choice - 1 = ", [choice - 1]).... If choice is 1, [choice - 1] = [0] , if choice is 2, [choice - 1] is [1]
+        # print("Verifier grapgh to check is  = ", graphToCheck).... If choice is 1, graphToCheck = G1 , if choice is 2, graphToCheck is G2
         f = isomorphism
+        # f =  isomorphism = piInverse = lambda i: 1 + L.index(i - 1) given L = randomIsomorphism) = [3, 4, 2, 0, 1, 5]  OR f = lambda i: L[i - 1] + 1 given L = isomorphism) = [3, 4, 2, 0, 1, 5]
 
-        isValidIsomorphism = (graphToCheck == applyIsomorphism(H, f))
+        print("Verifier final  H = ", H)
+        print("Verifier final  f = ", f)
+        isValidIsomorphism = (graphToCheck == applyIsomorphism(H, f))   # = applyIsomorphism(G2, f)
+        print("Verifier graphToCheck = ", graphToCheck)
+        print("Verifier applyIsomorphism = ", applyIsomorphism(H, f))
+        print("Verifier isValidIsomorphism = ", isValidIsomorphism)
         return isValidIsomorphism
 
 
@@ -149,8 +164,10 @@ def runProtocol(G1, G2, isomorphism):
     # choice =  2 / 1
 
     witnessIsomorphism = p.proveIsomorphicTo(choice)
+    # witnessIsomorphism = print("Prover pragpChoice is 1 thus return piInverse = ") OR ("Prover pragpChoice is 2)
+    # thus return f = ")
 
-    return v.accepts(witnessIsomorphism)
+    return v.accepts(witnessIsomorphism)    #returns True if G2 ==G2 when choice is 2 OR True if G1 ==G1 when choice is 1
 
 
 def convinceBeyondDoubt(G1, G2, isomorphism, errorTolerance=1e-20):
@@ -159,11 +176,16 @@ def convinceBeyondDoubt(G1, G2, isomorphism, errorTolerance=1e-20):
     # isomorphism = p = [3, 4, 2, 0, 1, 5]
     probabilityFooled = 1
 
+    print("IS probabilityFooled > errorTolerance", probabilityFooled > errorTolerance)
     while probabilityFooled > errorTolerance:
         result = runProtocol(G1, G2, isomorphism)
+        # print("RESULT = ", result) = True
         assert result
+        # print("assert result") if result = False it gives AssertionError
         probabilityFooled *= 0.5
+        # print("probabilityFooled is = ", probabilityFooled)
         # print(probabilityFooled)
+#     Loop continnues 68 times until probabilityFooled <(less than) errorTolerance each time running the runProtocol function and giving result = True
 
 
 def messagesFromProtocol(G1, G2, isomorphism):
@@ -209,4 +231,4 @@ if __name__ == "__main__":
     assert applyIsomorphism(G1, f) == G2
     assert applyIsomorphism(G2, finv) == G1
 
-    convinceBeyondDoubt(G1, G2, p)
+    convinceBeyondDoubt(G1, G2, p)      #Runs a number of time to verify if true is really true in all the given loops e.g 68 times
