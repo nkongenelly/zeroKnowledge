@@ -1,5 +1,9 @@
 import random
 import inspect
+import numpy as np
+import igraph
+from igraph import *
+import matplotlib.pyplot, pylab
 import sys
 
 # a graph is a list of edges, and for simplicity we'll say
@@ -40,15 +44,39 @@ def makeInversePermutationFunction(L):
 
 
 def applyIsomorphism(G, f):
+    # L = [3, 4, 2, 0, 1, 5]
     # f = lambda i: L[i - 1] + 1
     # finv = f = lambda i: 1 + L.index(i - 1)
     # G1 = [(1, 2), (1, 4), (1, 3), (2, 5), (2, 5), (3, 6), (5, 6)]
     # G2 = [(4, 5), (4, 1), (4, 3), (5, 2), (5, 2), (3, 6), (2, 6)]
+    # G = [(4, 5), (4, 1), (4, 3), (5, 2), (5, 2), (3, 6), (2, 6)]
+    # G = [(1, 2), (1, 4), (1, 3), (2, 5), (2, 5), (3, 6), (5, 6)]
+
     # print("G is = ", G)
     # for (i, j) in G:
+    # f = lambda i: L[i - 1] + 1
+    # f = lambda i: 1 + L.index(i - 1)
     #     print("i is =", i)
-    #     print("f(", i,") is ", f(i))
+    #     print("f(", i, ") is ", f(i))
     return [(f(i), f(j)) for (i, j) in G]
+
+
+def drawIsomorphism(n, G1):
+    g = Graph()
+    print("Graph G = ", g)
+    g.add_vertices(n)
+    g.add_edges(G1)
+    g = Graph.GRG(100, 0.2)
+    return g
+
+
+def isIsomorphism(n, G1, G2):
+    g1 = drawIsomorphism(n, G1)
+    g2 = Graph.GRG(100, 0.2)
+    g1.get_edgelist() == g2.get_edgelist()
+    # False
+    g = g1.isomorphic(g2)
+    return g
 
 
 class Prover(object):
@@ -142,10 +170,10 @@ class Verifier(object):
 
         print("Verifier final  H = ", H)
         print("Verifier final  f = ", f)
-        isValidIsomorphism = (graphToCheck == applyIsomorphism(H, f))   # = applyIsomorphism(G2, f)
-        print("Verifier graphToCheck = ", graphToCheck)
-        print("Verifier applyIsomorphism = ", applyIsomorphism(H, f))
-        print("Verifier isValidIsomorphism = ", isValidIsomorphism)
+        isValidIsomorphism = (graphToCheck == applyIsomorphism(H, f))  # = applyIsomorphism(G2, f)
+        # print("Verifier graphToCheck = ", graphToCheck)
+        # print("Verifier applyIsomorphism = ", applyIsomorphism(H, f))
+        # print("Verifier isValidIsomorphism = ", isValidIsomorphism)
         return isValidIsomorphism
 
 
@@ -167,7 +195,7 @@ def runProtocol(G1, G2, isomorphism):
     # witnessIsomorphism = print("Prover pragpChoice is 1 thus return piInverse = ") OR ("Prover pragpChoice is 2)
     # thus return f = ")
 
-    return v.accepts(witnessIsomorphism)    #returns True if G2 ==G2 when choice is 2 OR True if G1 ==G1 when choice is 1
+    return v.accepts(witnessIsomorphism)  # returns True if G2 ==G2 when choice is 2 OR True if G1 ==G1 when choice is 1
 
 
 def convinceBeyondDoubt(G1, G2, isomorphism, errorTolerance=1e-20):
@@ -185,10 +213,14 @@ def convinceBeyondDoubt(G1, G2, isomorphism, errorTolerance=1e-20):
         probabilityFooled *= 0.5
         # print("probabilityFooled is = ", probabilityFooled)
         # print(probabilityFooled)
+
+
 #     Loop continnues 68 times until probabilityFooled <(less than) errorTolerance each time running the runProtocol function and giving result = True
 
 
 def messagesFromProtocol(G1, G2, isomorphism):
+    # G1 is = [(1, 2), (1, 4), (1, 3), (2, 5), (2, 5), (3, 6), (5, 6)]
+    # G2 is = [(4, 5), (4, 1), (4, 3), (5, 2), (5, 2), (3, 6), (2, 6)]
     p = Prover(G1, G2, isomorphism)
     v = Verifier(G1, G2)
 
@@ -202,6 +234,8 @@ def messagesFromProtocol(G1, G2, isomorphism):
 def simulateProtocol(G1, G2):
     # Construct data drawn from the same distribution as what is
     # returned by messagesFromProtocol
+    # G1 is = [(1, 2), (1, 4), (1, 3), (2, 5), (2, 5), (3, 6), (5, 6)]
+    # G2 is = [(4, 5), (4, 1), (4, 3), (5, 2), (5, 2), (3, 6), (2, 6)]
     choice = random.choice([1, 2])
     G = [G1, G2][choice - 1]
     n = numVertices(G)
@@ -215,9 +249,25 @@ def simulateProtocol(G1, G2):
 
 if __name__ == "__main__":
     G1 = exampleGraph
+
+    # data = [(62725984, 63548262), (64797631, 64619047), (65069350, 65398449), (58960696, 57416785),
+    #         (58760119, 58666604), (60470606, 61338129), (60728760, 59001882)]
+    # data = G1
+    # matplotlib.pyplot.scatter(*zip(*data))
+    # matplotlib.pyplot.show()
+    # A = np.array(G1)
+    #
+    # Flattened_X = A.flatten()
+    # print(Flattened_X)
+    #
+    # print(A.flatten(order="C"))
+    # print(A.flatten(order="F"))
+    # print(A.flatten(order="A"))
     print("G1 is =", G1)
     n = numVertices(G1)
     print("number of vertices n =", n)
+    drawIsomorphic(n, G1)
+
     p = randomPermutation(n)
     print("random permutation p= ", p)
     f = makePermutationFunction(p)
@@ -231,4 +281,5 @@ if __name__ == "__main__":
     assert applyIsomorphism(G1, f) == G2
     assert applyIsomorphism(G2, finv) == G1
 
-    convinceBeyondDoubt(G1, G2, p)      #Runs a number of time to verify if true is really true in all the given loops e.g 68 times
+    convinceBeyondDoubt(G1, G2,
+                        p)  # Runs a number of time to verify if true is really true in all the given loops e.g 68 times
