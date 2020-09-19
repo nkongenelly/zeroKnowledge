@@ -31,7 +31,7 @@ class BBSBitCommitmentScheme(CommitmentScheme):
         # print(" oneWayPerm = ", oneWayPerm) ...f = (inputInt squared) % (modulus = 281333)
         # print("hardcorePred = ", hardcorePred) #.. function = sum(int(x) for x in bin(n)[2:]) % 2
         m = random.getrandbits(self.securityParameter)
-        m = 92
+        # m = 92
         # self.secret = self.oneWayPermutation(random.getrandbits(self.securityParameter))
         self.secret = self.oneWayPermutation(m)
         # m = random.getrandbits(self.securityParameter)
@@ -118,7 +118,7 @@ class BBSIntCommitmentScheme(CommitmentScheme):
         return self.secret
 
     def commit(self, integer):
-        integer = 750
+        # integer = 750
         # first pad bits to desired length
         # print("BBSIntCommitmentScheme commit = ", bin(int(integer))[2:].zfill(len(self.schemes)))   # = 1011101110
         integer = bin(integer)[2:].zfill(len(self.schemes))
@@ -132,7 +132,7 @@ class BBSIntCommitmentScheme(CommitmentScheme):
         #     b.append(int(bit))
         # print("BBSIntCommitmentScheme commit b = ", b)
         # print("BBSIntCommitmentScheme commit b again = ", int(b)) # = [1, 0, 1, 1, 1, 0, 1, 1, 1, 0]
-        r = [scheme.commit(bit) for scheme, bit in zip(self.schemes, bits)]
+        # r = [scheme.commit(bit) for scheme, bit in zip(self.schemes, bits)]
         # self.schemes = [BBSBitCommitmentScheme(oneWayPermutation, hardcorePredicate, securityParameter)
         #                 for _ in range(numBits)]
         # print("BBSIntCommitmentScheme self.schemes = ", self.schemes)
@@ -155,7 +155,23 @@ class BBSIntCommitmentVerifier(object):
         self.verifiers = [BBSBitCommitmentVerifier(oneWayPermutation, hardcorePredicate)
                           for _ in range(numBits)]
 
+        # numBits = 10
+        # print(" oneWayPerm1 = ", oneWayPermutation) #...f = (inputInt squared) % (modulus = 281333)
+        # print("hardcorePred = ", hardcorePred) #.. function = sum(int(x) for x in bin(n)[2:]) % 2
+
     def decodeBits(self, secrets, bitCommitments):
+        # print("committments = ", commitments)   # =   [(180714, 0), (180714, 1), (180714, 0), (180714, 0), (180714, 0), (180714, 1), (180714, 0), (180714, 0), (180714, 0), (180714, 1)]
+        # bitCommitments =   [(180714, 0), (180714, 1), (180714, 0), (180714, 0), (180714, 0), (180714, 1), (180714, 0), (180714, 0), (180714, 0), (180714, 1)]
+        # print("secrets reveal = ", secrets) # = [8464, 8464, 8464, 8464, 8464, 8464, 8464, 8464, 8464, 8464]
+        # secrets   = [8464, 8464, 8464, 8464, 8464, 8464, 8464, 8464, 8464, 8464]
+        # print("zip(self.verifiers, secrets, bitCommitments) = ", zip(self.verifiers, secrets, bitCommitments))
+        # for v, secret, commitment in zip(self.verifiers,secrets,bitCommitments):
+        #     print("commitment = ", commitment) # = (180714, 0)
+        #     print("secret = ", secret)  # = 8464
+        #     print("v = ", v)    # = <__main__.BBSBitCommitmentVerifier object at 0x000002C2BAA9BF10>
+        #
+        # print("BBSIntCommitmentVerifier decodeBits answer = ", [v.decode(secret, commitment) for (v, secret, commitment) in
+        #         zip(self.verifiers, secrets, bitCommitments)])      # = [1, 0, 1, 1, 1, 0, 1, 1, 1, 0]
         return [v.decode(secret, commitment) for (v, secret, commitment) in
                 zip(self.verifiers, secrets, bitCommitments)]
 
@@ -167,7 +183,18 @@ class BBSIntCommitmentVerifier(object):
         )
 
     def decode(self, secrets, bitCommitments):
-        decodedBits = self.decodeBits(secrets, bitCommitments)
+        # print("committments = ", commitments)   # =   [(180714, 0), (180714, 1), (180714, 0), (180714, 0), (180714, 0), (180714, 1), (180714, 0), (180714, 0), (180714, 0), (180714, 1)]
+        # print("secrets reveal = ", secrets) # = [8464, 8464, 8464, 8464, 8464, 8464, 8464, 8464, 8464, 8464]
+        decodedBits = self.decodeBits(secrets, bitCommitments)  # = [1, 0, 1, 1, 1, 0, 1, 1, 1, 0]
+        # joins = []
+        # for bit in decodedBits:
+        #     joins1 = ''.join(str(bit))
+        #     joins.append(str(joins1))
+        #     print("BBSIntCommitmentVerifier decode joins = ", joins)
+        #
+        # ints = int(str(joins))
+        # print("BBSIntCommitmentVerifier decode ints = ", ints) # = 750
+        # print("BBSIntCommitmentVerifier decodeinal answer also = ", int(''.join(str(bit) for bit in decodedBits), 2))   # = 750
         return int(''.join(str(bit) for bit in decodedBits), 2)
 
 
@@ -187,7 +214,7 @@ if __name__ == "__main__":
     for _ in range(10):
         bit = random.choice([0, 1])
         print("random choice = ", bit)
-        bit = 1
+        # bit = 1
         commitment = scheme.commit(bit)  # BBSBitCommitmentScheme.commit(1)
         # print("committment = ", commitment) # = (180714, 1)
         secret = scheme.reveal()
@@ -197,24 +224,26 @@ if __name__ == "__main__":
         valid = verifier.verify(secret, commitment)
         # print("valid = ", valid)    # = 180714, 0
 
-        print("bit = ", bit)  # = 1
-        print("trueBit = ", trueBit)  # = 1
-        print("valid = ", valid)  # = True
-        print("secret = ", secret)  # = 8464
-        print("commitment = ", commitment)  # = 180714, 0
-
+        # print("bit = ", bit)  # = 1
+        # print("trueBit = ", trueBit)  # = 1
+        # print("valid = ", valid)  # = True
+        # print("secret = ", secret)  # = 8464
+        # print("commitment = ", commitment)  # = 180714, 0
+        #
         print('{} == {}? {}; {} {}'.format(bit, trueBit, valid, secret, commitment))  # 1 == 1? True; 8464 (180714, 0)
 
     print('Int commitment')
     scheme = BBSIntCommitmentScheme(10, oneWayPerm, hardcorePred)
     verifier = BBSIntCommitmentVerifier(10, oneWayPerm, hardcorePred)
+    # print("verifier main= ", verifier)
     choices = list(range(1024))
     # print("list in the range 1024 = ", list(range(1024)))   # = [0,1,2,3....,1022,1023]
     # print("list in the range 1024 length = ", len(choices))     # = 1024
+    truePercentage = 0
     for _ in range(10):
         theInt = random.choice(choices)
-        theInt = 750
-        print("theInt random choice = ", theInt)    # = 750
+        # theInt = 750
+        # print("theInt random choice = ", theInt)    # = 750
         commitments = scheme.commit(theInt)
         # print("committments = ", commitments)   # =   [(180714, 0), (180714, 1), (180714, 0), (180714, 0), (180714, 0), (180714, 1), (180714, 0), (180714, 0), (180714, 0), (180714, 1)]
         secrets = scheme.reveal()
@@ -223,5 +252,8 @@ if __name__ == "__main__":
         # print("trueInt = ", trueInt)    # = 750
         valid = verifier.verify(secrets, commitments)
         # print("valid = ", valid)    # = True
+        if valid == True:
+            truePercentage +=1
 
         print('{} == {}? {}; {} {}'.format(theInt, trueInt, valid, secrets, commitments))       # = 750 == 750? True; [8464, 8464, 8464, 8464, 8464, 8464, 8464, 8464, 8464, 8464] [(180714, 0), (180714, 1), (180714, 0), (180714, 0), (180714, 0), (180714, 1), (180714, 0), (180714, 0), (180714, 0), (180714, 1)]
+        print("percentage true = ", int((truePercentage/10) * 100), "%")

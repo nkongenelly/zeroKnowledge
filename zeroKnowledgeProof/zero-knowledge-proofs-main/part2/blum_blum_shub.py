@@ -23,13 +23,13 @@ def makeModulus(numBits=10):
     # print("find good prime length = ", len(str(findGoodPrime(numBits))))
     # print("find good prime squared= ", findGoodPrime(numBits) * findGoodPrime(numBits))
     # print("find good prime squared length = ", len(str(findGoodPrime(numBits) * findGoodPrime(numBits))))
-    prime = 281333
-    # return findGoodPrime(numBits) * findGoodPrime(numBits)
-    return prime
+    # prime = 281333
+    return findGoodPrime(numBits) * findGoodPrime(numBits)
+    # return prime
 
 
 def parity(n):
-    n = 8464
+    # n = 8464
     # p = sum(int(x) for x in bin(n)[2:]) % 2
     # print("parity sum = ", p)
     # print("parity n = ", n)     #n = 10

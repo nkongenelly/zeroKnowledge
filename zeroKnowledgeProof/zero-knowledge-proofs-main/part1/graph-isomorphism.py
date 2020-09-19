@@ -1,10 +1,14 @@
 import random
 import inspect
-import numpy as np
+import networkx as nx
+import matplotlib.pyplot as plt
+# import numpy as np
 import igraph
 from igraph import *
-import matplotlib.pyplot, pylab
-import sys
+import networkx.algorithms.isomorphism as iso
+# import matplotlib.pyplot, pylab
+# import sys
+# import gra
 
 # a graph is a list of edges, and for simplicity we'll say
 # every vertex shows up in some edge
@@ -61,21 +65,58 @@ def applyIsomorphism(G, f):
     return [(f(i), f(j)) for (i, j) in G]
 
 
+def generate_edges(graph):
+    edges = []
+    for node, node1 in graph:
+        edges.append((node, node1))
+        # for neighbour in graph[node]:
+        #     edges.append((node, neighbour))
+
+    print("generated edges = ", edges)
+    return edges
+
+
 def drawIsomorphic(n, G1):
-    g = Graph()
-    print("Graph G = ", g)
-    g.add_vertices(n)
-    g.add_edges(G1)
-    g = Graph.GRG(100, 0.2)
-    return g
+    # for _ in 2:
+    g1 = nx.Graph()
+    # g1.add_node("a")
+    g1.add_edges_from(G1)
+    nx.draw(g1)
+    plt.savefig("G1.png")  # save as png
+    plt.show()  # display
+    # return g1
 
 
 def isIsomorphism(n, G1, G2):
-    g1 = drawIsomorphism(n, G1)
-    g2 = Graph.GRG(100, 0.2)
-    g1.get_edgelist() == g2.get_edgelist()
-    # False
-    g = g1.isomorphic(g2)
+    drawIsomorphic(n, G1)
+
+    # g1 = nx.DiGraph()
+    # g2 = nx.DiGraph()
+    # nx.add_path(G1, G1, weight=1)
+    # nx.add_path(G2, G2, weight=2)
+    # em = iso.numerical_edge_match("weight", 1)
+    # nx.is_isomorphic(G1, G2)  # no weights considered
+    # g = nx.is_isomorphic(G1, G2)
+    # print("is isomorphic? ", g)
+
+    g1 = nx.MultiDiGraph()
+    g2 = nx.MultiDiGraph()
+    g1.add_nodes_from(G1, fill="red")
+    g2.add_nodes_from(G2, fill="red")
+    nx.add_path(g1, G1, weight=3, linewidth=2.5)
+    nx.add_path(g2, G2, weight=3)
+    nm = iso.categorical_node_match("fill", "red")
+    nx.is_isomorphic(g1, g2, node_match=nm)
+    g = nx.is_isomorphic(g1, g2, node_match=nm)
+    print("is isomorphic? ", g)
+
+    g3 = nx.Graph()
+    # g1.add_node("a")
+    g3.add_edges_from(G2)
+    nx.draw(g3)
+    plt.savefig("G2.png")  # save as png
+    plt.show()
+
     return g
 
 
@@ -117,14 +158,14 @@ class Prover(object):
         piInverse = makeInversePermutationFunction(randomIsomorphism)
         # piInverse = lambda i: 1 + L.index(i - 1) given L = randomIsomorphism) = [3, 4, 2, 0, 1, 5]
 
-        print("Prover graphChoice = ", graphChoice)
+        # print("Prover graphChoice = ", graphChoice)
         if graphChoice == 1:
-            print("Prover pragpChoice is ", graphChoice, " thus return piInverse = ")
+            # print("Prover pragpChoice is ", graphChoice, " thus return piInverse = ")
             return piInverse
         else:
             f = makePermutationFunction(self.isomorphism)
             # f = lambda i: L[i - 1] + 1 given L = isomorphism) = [3, 4, 2, 0, 1, 5]
-            print("Prover pragpChoice is", graphChoice, " thus return = f")
+            # print("Prover pragpChoice is", graphChoice, " thus return = f")
             return lambda i: f(piInverse(i))
 
 
@@ -168,8 +209,8 @@ class Verifier(object):
         f = isomorphism
         # f =  isomorphism = piInverse = lambda i: 1 + L.index(i - 1) given L = randomIsomorphism) = [3, 4, 2, 0, 1, 5]  OR f = lambda i: L[i - 1] + 1 given L = isomorphism) = [3, 4, 2, 0, 1, 5]
 
-        print("Verifier final  H = ", H)
-        print("Verifier final  f = ", f)
+        # print("Verifier final  H = ", H)
+        # print("Verifier final  f = ", f)
         isValidIsomorphism = (graphToCheck == applyIsomorphism(H, f))  # = applyIsomorphism(G2, f)
         # print("Verifier graphToCheck = ", graphToCheck)
         # print("Verifier applyIsomorphism = ", applyIsomorphism(H, f))
@@ -204,7 +245,7 @@ def convinceBeyondDoubt(G1, G2, isomorphism, errorTolerance=1e-20):
     # isomorphism = p = [3, 4, 2, 0, 1, 5]
     probabilityFooled = 1
 
-    print("IS probabilityFooled > errorTolerance", probabilityFooled > errorTolerance)
+    # print("IS probabilityFooled > errorTolerance", probabilityFooled > errorTolerance)
     while probabilityFooled > errorTolerance:
         result = runProtocol(G1, G2, isomorphism)
         # print("RESULT = ", result) = True
@@ -283,3 +324,24 @@ if __name__ == "__main__":
 
     convinceBeyondDoubt(G1, G2,
                         p)  # Runs a number of time to verify if true is really true in all the given loops e.g 68 times
+
+    isIsomorphism(n, G1, G2)
+    # graph = isIsomorphism(n, G1, G2)
+
+    # g1 = nx.Graph()
+    # g1.add_node("a")
+    # nx.draw(graph)
+    # plt.savefig("finalGraph.png")  # save as png
+    # plt.show()  # display
+
+    g2 = nx.Graph()
+    # g2.add_node("a")
+    # nx.draw(G1)
+    # plt.savefig("G1.png")  # save as png
+    # plt.show()  # display
+    #
+    # g3 = nx.Graph()
+    # g3.add_node("a")
+    # nx.draw(G2)
+    # plt.savefig("G2.png")  # save as png
+    # plt.show()  # display
